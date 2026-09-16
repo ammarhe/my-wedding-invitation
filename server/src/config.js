@@ -1,7 +1,15 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+// esbuild bundles this to CJS for Netlify, where import.meta.url can be undefined.
+// These filesystem paths are only used by the local sqlite/disk mode, so fall back to cwd.
+const __dirname = (() => {
+  try {
+    return path.dirname(fileURLToPath(import.meta.url))
+  } catch {
+    return process.cwd()
+  }
+})()
 export const ROOT = path.resolve(__dirname, '..')
 
 export const PORT = Number(process.env.PORT || 4000)
