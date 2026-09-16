@@ -1,0 +1,19 @@
+{
+  "name": "wedding-invitation",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Customisable Arabic wedding invitation website (React + Vite) with an admin dashboard, guestbook and background music.",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "setup": "npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently -n api,web -c blue,magenta \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "build": "npm run build --prefix client",
+    "start": "npm start --prefix server",
+    "assets": "bash scripts/fetch-assets.sh"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.4"
+  }
+}
