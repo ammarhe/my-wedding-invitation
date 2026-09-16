@@ -38,6 +38,16 @@ export const handler = async (event, context) => {
     event.path = new URL(event.rawUrl).pathname
   }
 
-  const h = await getHandler()
-  return h(event, context)
+  try {
+    const h = await getHandler()
+    return h(event, context)
+  } catch (err) {
+    // Return a readable 500 instead of an opaque Netlify 502 so the cause is visible in logs.
+    console.error('Function error:', err)
+    return {
+      statusCode: 500,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ error: 'Server error', detail: String(err?.message || err) }),
+    }
+  }
 }

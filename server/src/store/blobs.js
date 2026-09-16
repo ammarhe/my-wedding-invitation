@@ -7,11 +7,14 @@ import { deepMerge, nowSql } from './shared.js'
 const MAX_VISITS_KEPT = 500
 
 export function createBlobsStore() {
-  const data = getStore({ name: 'wedding-data' })
-  const files = getStore({ name: 'wedding-uploads' })
+  // Resolve the stores per call, not once: Netlify attaches short-lived blob credentials
+  // per invocation (via connectLambda / NETLIFY_BLOBS_CONTEXT). Caching a getStore() handle
+  // across warm invocations reuses an expired token and 502s. getStore() is cheap.
+  const data = () => getStore({ name: 'wedding-data' })
+  const files = () => getStore({ name: 'wedding-uploads' })
 
-  const readJson = async (key, fallback) => (await data.get(key, { type: 'json' })) ?? fallback
-  const writeJson = (key, value) => data.setJSON(key, value)
+  const readJson = async (key, fallback) => (await data().get(key, { type: 'json' })) ?? fallback
+  const writeJson = (key, value) => data().setJSON(key, value)
 
   async function getContent() {
     const stored = await readJson('content', null)
@@ -95,28 +98,30 @@ export function createBlobsStore() {
     files: {
       staticDir: null,
       async save(name, buffer, mime) {
-        await files.set(name, new Blob([buffer]), { metadata: { mime, size: buffer.length, mtime: Date.now() } })
+        await files().set(name, new Blob([buffer]), { metadata: { mime, size: buffer.length, mtime: Date.now() } })
         return { url: `/uploads/${name}`, size: buffer.length, mime }
       },
       async get(name) {
-        const res = await files.getWithMetadata(name, { type: 'arrayBuffer' })
+        const res = await files().getWithMetadata(name, { type: 'arrayBuffer' })
         if (!res) return null
         return { buffer: Buffer.from(res.data), mime: res.metadata?.mime || 'application/octet-stream' }
       },
       async list() {
-        const { blobs } = await files.list()
+        const store = files()
+        const { blobs } = await store.list()
         const out = await Promise.all(
           blobs.map(async ({ key }) => {
-            const meta = await files.getMetadata(key)
+            const meta = await store.getMetadata(key)
             return { url: `/uploads/${key}`, name: key, size: meta?.metadata?.size ?? 0, mtime: meta?.metadata?.mtime ?? 0 }
           }),
         )
         return out.sort((a, b) => b.mtime - a.mtime)
       },
       async remove(name) {
-        const exists = await files.getMetadata(name)
+        const store = files()
+        const exists = await store.getMetadata(name)
         if (!exists) return false
-        await files.delete(name)
+        await store.delete(name)
         return true
       },
     },
