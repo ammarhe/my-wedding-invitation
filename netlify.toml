@@ -1,25 +1,53 @@
+# Netlify deployment: static React build + one serverless function for the API.
+# Data (content, wishes, uploads) is stored in Netlify Blobs, so nothing is lost between deploys.
+#
+# Required environment variables (Site settings -> Environment variables):
+#   ADMIN_PASSWORD   dashboard password
+#   SESSION_SECRET   long random string (e.g. `openssl rand -hex 32`)
+# Optional: MAX_IMAGE_MB / MAX_AUDIO_MB (keep <= 4 — Netlify Functions accept ~6 MB per request)
+
 [build]
-  command   = "npm run setup && npm run build"
-  publish   = "client/dist"
+  command = "npm run build:netlify"
+  publish = "client/dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "22"
+  AWS_LAMBDA_JS_RUNTIME = "nodejs22.x"
+  NETLIFY = "true"
 
 [functions]
-  directory            = "netlify/functions"
-  external_node_modules = ["better-sqlite3"]
+  node_bundler = "esbuild"
 
-[[redirects]]
-  from     = "/api/*"
-  to       = "/.netlify/functions/api/:splat"
-  status   = 200
-  force    = true
+  # Keep npm packages as real node_modules inside the function bundle (Express uses dynamic
+  # require(), which breaks when esbuild inlines it into an ES module).
+  external_node_modules = ["express", "serverless-http", "multer", "cookie-parser", "@netlify/blobs"]
 
+# API + uploads -> the function
 [[redirects]]
-  from     = "/uploads/*"
-  to       = "/.netlify/functions/api/uploads/:splat"
-  status   = 200
-  force    = true
-
-# SPA fallback — must be last
-[[redirects]]
-  from   = "/*"
-  to     = "/index.html"
+  from = "/api/*"
+  to = "/.netlify/functions/api/api/:splat"
   status = 200
+  force = true
+
+[[redirects]]
+  from = "/uploads/*"
+  to = "/.netlify/functions/api/uploads/:splat"
+  status = 200
+  force = true
+
+# Single-page app fallback (React Router: /, /admin, /i/:slug)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/theme/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

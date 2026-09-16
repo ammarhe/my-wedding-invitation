@@ -7,7 +7,8 @@ every piece of content, guest wishes, photos and background music.
 ```
 wedding-invitation/
 ├─ client/      React 18 + Vite  — the invitation (/) and the dashboard (/admin)
-├─ server/      Express + SQLite (built-in node:sqlite) — content, wishes, uploads, auth
+├─ server/      Express API — SQLite (local/Docker) or Netlify Blobs storage, uploads, auth
+├─ netlify/     Netlify Function wrapping the same API (Netlify Blobs storage) + netlify.toml
 ├─ scripts/     fetch-assets.sh — grabs the full-res artwork + original track
 ├─ Dockerfile, docker-compose.yml
 └─ package.json root scripts (setup / dev / build / start)
@@ -39,6 +40,25 @@ npm start              # serves site + API + dashboard on http://localhost:4000
 
 The server serves the built client itself, so a single port is enough. Put it behind
 nginx/Caddy with HTTPS and set `COOKIE_SECURE=true` in `server/.env`.
+
+### Netlify (free hosting, no server to run)
+
+The repo is Netlify-ready: the React app is published as static files and the API runs as one
+Netlify Function (`netlify/functions/api.mjs`). Content, wishes and uploads are stored in
+**Netlify Blobs**, so they survive deploys (functions have no persistent disk).
+
+1. Push the project to GitHub/GitLab and "Add new site → Import" it in Netlify. `netlify.toml`
+   already sets the build command (`npm run build:netlify`), publish folder (`client/dist`) and redirects.
+2. In *Site configuration → Environment variables* add:
+   `ADMIN_PASSWORD` (your dashboard password) and `SESSION_SECRET` (e.g. `openssl rand -hex 32`).
+3. Deploy. The invitation is at `https://<site>.netlify.app/`, the dashboard at `/admin`.
+
+Notes for Netlify: uploads are capped at 4 MB per file (Netlify Functions accept ~6 MB per request),
+so for a background track either compress the MP3 (a 3-minute song at 96 kbps is ~2 MB) or put the
+file in `client/public/theme/` and paste `/theme/<file>.mp3` as the music URL in the dashboard.
+Freshly saved changes can take up to a minute to reach every guest (Blobs edge cache).
+Storage is selected automatically (`STORAGE=blobs` on Netlify, `sqlite` elsewhere).
+`node scripts/test-netlify-function.mjs` runs the function locally against a local Blobs server.
 
 ### Docker
 

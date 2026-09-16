@@ -1,20 +1,28 @@
 {
   "name": "wedding-invitation",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Customisable Arabic wedding invitation website (React + Vite) with an admin dashboard, guestbook and background music.",
+  "type": "module",
   "engines": {
     "node": ">=22.13"
   },
   "scripts": {
     "setup": "npm install --prefix server && npm install --prefix client",
     "dev": "concurrently -n api,web -c blue,magenta \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
-    "build": "npm install --prefix server && npm run build --prefix client",
+    "build": "npm run build --prefix client",
+    "build:netlify": "npm install --prefix client --no-audit --no-fund && npm run build --prefix client",
     "start": "npm start --prefix server",
-    "deploy": "npx -y netlify-cli deploy --prod",
     "assets": "bash scripts/fetch-assets.sh"
   },
+  "dependencies": {
+    "@netlify/blobs": "^11.1.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.0",
+    "multer": "^1.4.5-lts.1",
+    "serverless-http": "^4.0.0"
+  },
   "devDependencies": {
-    "concurrently": "^9.2.4"
+    "concurrently": "^9.0.1"
   }
 }
