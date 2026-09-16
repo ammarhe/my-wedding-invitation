@@ -1,4 +1,4 @@
-import { DatabaseSync } from 'node:sqlite'
+import Database from 'better-sqlite3'
 import fs from 'node:fs'
 import path from 'node:path'
 import { defaultContent } from './defaultContent.js'
@@ -7,7 +7,7 @@ import { DATA_DIR } from './config.js'
 fs.mkdirSync(DATA_DIR, { recursive: true })
 const dbPath = path.join(DATA_DIR, 'wedding.sqlite')
 
-export const db = new DatabaseSync(dbPath)
+export const db = new Database(dbPath)
 db.exec('PRAGMA journal_mode = WAL;')
 
 db.exec(`

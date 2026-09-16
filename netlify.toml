@@ -3,9 +3,8 @@
   publish   = "client/dist"
 
 [functions]
-  directory      = "netlify/functions"
-  node_bundler   = "none"
-  included_files = ["server/**"]
+  directory            = "netlify/functions"
+  external_node_modules = ["better-sqlite3"]
 
 [[redirects]]
   from     = "/api/*"
