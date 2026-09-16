@@ -36,6 +36,14 @@
   status = 200
   force = true
 
+# Missing static assets (e.g. optional theme decorations) must return a real 404 instead of
+# falling through to index.html. Otherwise <img> gets a 200 HTML body and iOS Safari shows a
+# broken-image box without firing onerror, so SafeImg can't hide it.
+[[redirects]]
+  from = "/theme/*"
+  to = "/theme/:splat"
+  status = 404
+
 # Single-page app fallback (React Router: /, /admin, /i/:slug)
 [[redirects]]
   from = "/*"
