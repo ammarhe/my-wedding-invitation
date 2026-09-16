@@ -9,8 +9,9 @@
   "scripts": {
     "setup": "npm install --prefix server && npm install --prefix client",
     "dev": "concurrently -n api,web -c blue,magenta \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
-    "build": "npm run build --prefix client",
+    "build": "npm install --prefix server && npm run build --prefix client",
     "start": "npm start --prefix server",
+    "deploy": "npx -y netlify-cli deploy --prod",
     "assets": "bash scripts/fetch-assets.sh"
   },
   "devDependencies": {

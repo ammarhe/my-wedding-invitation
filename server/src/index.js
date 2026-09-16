@@ -10,7 +10,7 @@ import { login, logout, me, requireAdmin } from './auth.js'
 
 fs.mkdirSync(UPLOAD_DIR, { recursive: true })
 
-const app = express()
+export const app = express()
 app.set('trust proxy', 1)
 app.disable('x-powered-by')
 app.use(express.json({ limit: '2mb' }))
@@ -174,8 +174,11 @@ if (fs.existsSync(CLIENT_DIST)) {
   )
 }
 
-app.listen(PORT, () => {
-  console.log(`Wedding invitation server listening on http://localhost:${PORT}`)
-  console.log(`Uploads: ${UPLOAD_DIR}`)
-  console.log(fs.existsSync(CLIENT_DIST) ? `Serving client from ${CLIENT_DIST}` : 'Client build not found (dev mode: run vite separately)')
-})
+// Only listen when running as a standalone server (not as a Netlify Function).
+if (!process.env.NETLIFY) {
+  app.listen(PORT, () => {
+    console.log(`Wedding invitation server listening on http://localhost:${PORT}`)
+    console.log(`Uploads: ${UPLOAD_DIR}`)
+    console.log(fs.existsSync(CLIENT_DIST) ? `Serving client from ${CLIENT_DIST}` : 'Client build not found (dev mode: run vite separately)')
+  })
+}

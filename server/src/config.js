@@ -5,7 +5,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export const ROOT = path.resolve(__dirname, '..')
 
 export const PORT = Number(process.env.PORT || 4000)
-export const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, 'data')
+const isNetlify = !!process.env.NETLIFY
+export const DATA_DIR = process.env.DATA_DIR || (isNetlify ? '/tmp/wi-data' : path.join(ROOT, 'data'))
 export const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(DATA_DIR, 'uploads')
 export const CLIENT_DIST = process.env.CLIENT_DIST || path.resolve(ROOT, '..', 'client', 'dist')
 
