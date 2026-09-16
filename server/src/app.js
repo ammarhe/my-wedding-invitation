@@ -35,6 +35,12 @@ export function createApp(store) {
     limits: { fileSize: MAX_AUDIO_MB * 1024 * 1024 },
     fileFilter: (_req, file, cb) => cb(null, /^audio\/(mpeg|mp3|mp4|aac|ogg|wav|x-wav|webm|x-m4a|m4a)$/.test(file.mimetype)),
   })
+  const fontUpload = multer({
+    storage: memory,
+    limits: { fileSize: 4 * 1024 * 1024 },
+    // Browsers pick the format from @font-face, not the mime type, so match on the file name.
+    fileFilter: (_req, file, cb) => cb(null, /\.(woff2?|ttf|otf)$/i.test(file.originalname || '')),
+  })
 
   if (store.files.staticDir) {
     app.use('/uploads', express.static(store.files.staticDir, { maxAge: '30d', immutable: true, fallthrough: true }))
@@ -148,6 +154,15 @@ export function createApp(store) {
     audioUpload.single('file'),
     wrap(async (req, res) => {
       if (!req.file) return res.status(400).json({ error: 'No audio received (mp3/m4a/aac/ogg/wav).' })
+      const saved = await store.files.save(fileName(req.file.originalname), req.file.buffer, req.file.mimetype)
+      res.json({ url: saved.url, size: saved.size, name: req.file.originalname })
+    }),
+  )
+  admin.post(
+    '/upload/font',
+    fontUpload.single('file'),
+    wrap(async (req, res) => {
+      if (!req.file) return res.status(400).json({ error: 'No font received (woff2/woff/ttf/otf).' })
       const saved = await store.files.save(fileName(req.file.originalname), req.file.buffer, req.file.mimetype)
       res.json({ url: saved.url, size: saved.size, name: req.file.originalname })
     }),

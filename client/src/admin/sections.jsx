@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../lib/api.js'
 import { Card, Check, Color, Field, Select, getPath } from './fields.jsx'
 import UploadZone from './UploadZone.jsx'
+import { BODY_FONTS, HEADING_FONTS } from '../lib/fonts.js'
 
 const TIMEZONES = [
   'Europe/Berlin', 'Europe/London', 'Europe/Paris', 'Europe/Istanbul', 'Asia/Damascus', 'Asia/Beirut',
@@ -211,8 +212,30 @@ export function TextsSection({ draft, onChange }) {
 }
 
 // ------------------------------------------------------------------ Theme
-export function ThemeSection({ draft, onChange }) {
+export function ThemeSection({ draft, onChange, notify }) {
   const p = { draft, onChange }
+  const [fontBusy, setFontBusy] = useState(false)
+  const customName = getPath(draft, 'theme.fonts.customName')
+  const bodyFont = getPath(draft, 'theme.fonts.body') || 'Amiri'
+  const customOpt = customName ? [{ value: customName, label: `${customName} (uploaded)` }] : []
+  const bodyOptions = [...BODY_FONTS.map((f) => ({ value: f, label: f })), ...customOpt]
+  const headingOptions = [...HEADING_FONTS.map((f) => ({ value: f, label: f })), ...customOpt]
+
+  const uploadFont = async ([file]) => {
+    setFontBusy(true)
+    try {
+      const r = await api.uploadFont(file)
+      const family = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim() || 'Custom font'
+      onChange('theme.fonts.customName', family)
+      onChange('theme.fonts.customUrl', r.url)
+      onChange('theme.fonts.body', family)
+      notify('Font uploaded and applied to body text. Remember to save.', 'ok')
+    } catch (e) {
+      notify(e.message, 'err')
+    } finally {
+      setFontBusy(false)
+    }
+  }
   const presets = [
     { name: 'Dark red (original)', primary: '#511419', accent: '#590310', background: '#fff7eb', light: '#ece4d8' },
     { name: 'Forest green', primary: '#1f3d2b', accent: '#183022', background: '#f6f4ec', light: '#e8e6d8' },
@@ -254,6 +277,57 @@ export function ThemeSection({ draft, onChange }) {
           Decoration images live in <code className="adm-code">client/public/theme/</code>. Replace the files there to change the artwork
           (keep the same file names).
         </p>
+      </Card>
+      <Card title="Fonts" hint="Pick a font for the Arabic body text and one for the large names. The preview on the right updates live.">
+        <div className="adm-grid">
+          <Select label="Body / Arabic text" path="theme.fonts.body" options={bodyOptions} {...p} />
+          <Select label="Headings & names" path="theme.fonts.heading" options={headingOptions} {...p} />
+        </div>
+        <div
+          style={{
+            marginTop: 14,
+            padding: '14px 18px',
+            border: '1px solid var(--line, #e3ddd3)',
+            borderRadius: 10,
+            direction: 'rtl',
+            textAlign: 'center',
+            fontFamily: `'${bodyFont}', 'Amiri', serif`,
+            fontSize: 26,
+          }}
+        >
+          عمار &amp; سنا — بكل الحب والسرور
+        </div>
+        <div style={{ marginTop: 16 }}>
+          <label className="adm-small" style={{ display: 'block', marginBottom: 6 }}>
+            Or upload your own font file (WOFF2, WOFF, TTF or OTF · up to 4 MB)
+          </label>
+          <UploadZone
+            accept=".woff2,.woff,.ttf,.otf,font/*"
+            busy={fontBusy}
+            label="Drop a font file here or click to upload"
+            onFiles={uploadFont}
+          />
+          {customName && (
+            <p className="adm-small" style={{ marginTop: 8 }}>
+              Uploaded font: <strong>{customName}</strong>. It’s available in both dropdowns above.{' '}
+              <button
+                type="button"
+                className="btn btn-sm btn-danger"
+                onClick={() => {
+                  onChange('theme.fonts.customName', '')
+                  onChange('theme.fonts.customUrl', '')
+                  if (getPath(draft, 'theme.fonts.body') === customName) onChange('theme.fonts.body', 'Amiri')
+                  if (getPath(draft, 'theme.fonts.heading') === customName) onChange('theme.fonts.heading', 'Viaoda Libre')
+                }}
+              >
+                Remove uploaded font
+              </button>
+            </p>
+          )}
+          <p className="adm-small" style={{ marginTop: 8 }}>
+            Tip: WOFF2 is the smallest and loads fastest. For Arabic, make sure the font actually contains Arabic letters.
+          </p>
+        </div>
       </Card>
     </>
   )

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { api } from '../lib/api.js'
 import { startAutoScroll } from '../lib/autoScroll.js'
+import { loadFonts, fontStack } from '../lib/fonts.js'
 import Cover from './Cover.jsx'
 import Header from './Header.jsx'
 import ParentsCard from './ParentsCard.jsx'
@@ -54,6 +55,11 @@ export default function InvitationPage({ preview = false, previewContent = null 
   useEffect(() => {
     if (content?.meta?.title) document.title = content.meta.title
   }, [content?.meta?.title])
+
+  const fonts = content?.theme?.fonts
+  useEffect(() => {
+    if (fonts) loadFonts(fonts)
+  }, [fonts?.body, fonts?.heading, fonts?.customName, fonts?.customUrl])
 
   const stopAutoScroll = useRef(null)
   const openCover = useCallback(() => {
@@ -114,6 +120,8 @@ export default function InvitationPage({ preview = false, previewContent = null 
     '--primary-15': `rgba(${hexToRgb(t.primary)}, 0.15)`,
     '--primary-10': `rgba(${hexToRgb(t.primary)}, 0.1)`,
   }
+  if (t.fonts?.body) styleVars['--font-arabic'] = fontStack(t.fonts.body, `'Amiri', 'Times New Roman', serif`)
+  if (t.fonts?.heading) styleVars['--font-display'] = fontStack(t.fonts.heading, `'Viaoda Libre', 'Aref Ruqaa', 'Amiri', serif`)
 
   const gallery = content.gallery?.enabled ? (content.gallery.images || []).filter(Boolean) : []
   const openGallery = gallery.length ? () => setLightbox(0) : undefined

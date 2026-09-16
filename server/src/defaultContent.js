@@ -15,6 +15,12 @@ export const defaultContent = {
     paperTexture: true,
     castleBackground: true,
     flowers: true,
+    fonts: {
+      body: 'Amiri', // main Arabic text (--font-arabic)
+      heading: 'Viaoda Libre', // large display names (--font-display)
+      customName: '', // family name of an uploaded font file, if any
+      customUrl: '', // /uploads/… URL of the uploaded font file
+    },
   },
   cover: {
     enabled: true,

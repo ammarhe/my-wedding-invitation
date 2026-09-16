@@ -19,6 +19,22 @@ async function request(url, options = {}) {
   return data
 }
 
+// Netlify sync Functions hard-cap the whole request at ~6 MB. Multipart + base64 transport
+// adds ~37% overhead, so raw files must stay under ~4 MB. Reject early with a clear message
+// instead of letting Netlify return an opaque 413.
+const UPLOAD_MAX_MB = 4
+function ensureSize(file, kind) {
+  const maxBytes = UPLOAD_MAX_MB * 1024 * 1024
+  if (file && file.size > maxBytes) {
+    const mb = (file.size / 1024 / 1024).toFixed(1)
+    const err = new Error(
+      `This ${kind} is ${mb} MB. Max ${UPLOAD_MAX_MB} MB (Netlify upload limit). Compress it and try again.`,
+    )
+    err.status = 413
+    throw err
+  }
+}
+
 export const api = {
   // public
   getContent: () => request('/api/content'),
@@ -42,13 +58,21 @@ export const api = {
   uploads: () => request('/api/admin/uploads'),
   deleteUpload: (name) => request(`/api/admin/uploads/${encodeURIComponent(name)}`, { method: 'DELETE' }),
   uploadImage(file) {
+    ensureSize(file, 'image')
     const fd = new FormData()
     fd.append('file', file)
     return request('/api/admin/upload/image', { method: 'POST', body: fd })
   },
   uploadAudio(file) {
+    ensureSize(file, 'audio file')
     const fd = new FormData()
     fd.append('file', file)
     return request('/api/admin/upload/audio', { method: 'POST', body: fd })
+  },
+  uploadFont(file) {
+    ensureSize(file, 'font')
+    const fd = new FormData()
+    fd.append('file', file)
+    return request('/api/admin/upload/font', { method: 'POST', body: fd })
   },
 }
