@@ -2,7 +2,7 @@
 // Used automatically when the server runs inside a Netlify Function.
 import { getStore } from '@netlify/blobs'
 import { defaultContent } from '../defaultContent.js'
-import { deepMerge, nowSql } from './shared.js'
+import { deepMerge, nowSql, seedWishes } from './shared.js'
 
 const MAX_VISITS_KEPT = 500
 
@@ -26,7 +26,23 @@ export function createBlobsStore() {
   }
 
   // Wishes live in one JSON document: {seq, items:[...]}. Small scale, simple, fast.
-  const readWishes = () => readJson('wishes', { seq: 0, items: [] })
+  // On first read (no doc yet) seed the default wishes and persist them so ids stay stable.
+  const readWishes = async () => {
+    const stored = await readJson('wishes', null)
+    if (stored) return stored
+    let seq = 0
+    const items = seedWishes(defaultContent).map((w) => ({
+      id: ++seq,
+      name: w.name,
+      message: w.message,
+      approved: w.approved,
+      ip: null,
+      created_at: nowSql(),
+    }))
+    const doc = { seq, items }
+    await writeJson('wishes', doc)
+    return doc
+  }
   const readVisits = () => readJson('visits', { total: 0, recent: [] })
 
   return {

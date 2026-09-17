@@ -38,27 +38,32 @@ export const defaultContent = {
     saveTheDate: 'Save The Date',
     dateShort: '26.09.26',
     photo: '/theme/photo.webp',
+    quote: 'وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً'
   },
   groom: {
     shortName: 'عمار الحللي',
-    fullName: 'المهندس عمار الحللي',
+    title: 'المهندس',
+    fullName: 'عمار الحللي',
     subtitle: '',
-    parentTitle: 'الحاج',
+    parentTitle: 'حرم الحاج',
     parentName: 'محمد فريز الحللي',
     parentName2: '',
+    family: 'آل الحللي'
   },
   bride: {
     shortName: 'سنا العوا',
-    fullName: 'المهندسة سنا العوا',
+    title: 'المهندسة',
+    fullName: 'سنا العوا',
     subtitle: '',
-    parentTitle: 'الحاج',
+    parentTitle: 'حرم الحاج',
     parentName: 'محمد عرفان العوا',
     parentName2: '',
+    family: 'آل العوا'
   },
   announcement: 'بكل الحب والسرور نعلن\nعن زفاف أبنائنا',
   event: {
     title: 'معلومات الاستقبال',
-    subtitle: 'سيقام الاستقبال في:',
+    subtitle: 'يبدأ الحفل في',
     date: '2026-09-26',
     startTime: '19:00',
     endTime: '21:00',
@@ -112,4 +117,8 @@ export const defaultContent = {
     loop: true,
     volume: 0.7,
   },
+  wishes: {seq:1,items:[
+    {from: 'سنا اعويني', message:"بارك الله لكما وجمع بينكما في خير", status: 'visible', createdAt: new Date(), id: 1, updatedAt: new Date(), _version: 1},
+    {from: 'لمى الحللي', message:"الف الف مبروووووك ياعمري و روحي انتو الله يسعدكم و يجعلكن خير لبعض يارب", status: 'visible', createdAt: new Date(), id: 2, updatedAt: new Date(), _version: 1}
+  ]}
 }

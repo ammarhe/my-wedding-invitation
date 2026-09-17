@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { defaultContent } from '../defaultContent.js'
 import { DATA_DIR, UPLOAD_DIR } from '../config.js'
-import { deepMerge, MIME_BY_EXT } from './shared.js'
+import { deepMerge, MIME_BY_EXT, seedWishes } from './shared.js'
 
 export function createSqliteStore() {
   fs.mkdirSync(DATA_DIR, { recursive: true })
@@ -48,6 +48,11 @@ export function createSqliteStore() {
   const countVisits = db.prepare('SELECT COUNT(*) AS n FROM visits')
   const countWishes = db.prepare('SELECT COUNT(*) AS n, SUM(approved = 0) AS pending FROM wishes')
   const recentVisits = db.prepare('SELECT guest, created_at FROM visits ORDER BY id DESC LIMIT 20')
+
+  // Seed default wishes once, only when the table is empty (fresh install).
+  if (db.prepare('SELECT COUNT(*) AS n FROM wishes').get().n === 0) {
+    for (const w of seedWishes(defaultContent)) insertWish.run(w.name, w.message, w.approved, null)
+  }
 
   function getContentSync() {
     const row = getSetting.get('content')

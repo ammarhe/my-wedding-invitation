@@ -15,6 +15,15 @@ export function nowSql() {
   return new Date().toISOString().slice(0, 19).replace('T', ' ')
 }
 
+// Normalize defaultContent.wishes.items (shape {from, message, status}) into the
+// storage shape ({name, message, approved}) used to seed an empty wishes list.
+export function seedWishes(defaultContent) {
+  const items = defaultContent?.wishes?.items ?? []
+  return items
+    .filter((w) => w && w.from && w.message)
+    .map((w) => ({ name: w.from, message: w.message, approved: w.status === 'visible' ? 1 : 0 }))
+}
+
 export const MIME_BY_EXT = {
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
