@@ -14,11 +14,11 @@ export default function Cover({ content, guestName, open, onOpen }) {
       <div className="inv-cover-inner">
         <p className="inv-cover-greet">{cover.greeting}</p>
         <p className="inv-cover-names">
-          {groom.shortName}
+          {groom.family}
           <br />
           &amp;
           <br />
-          {bride.shortName}
+          {bride.family}
         </p>
         <div className="inv-cover-orn" aria-hidden="true">❦</div>
         {header.dateShort && <p className="inv-cover-date">{header.dateShort}</p>}

@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CardChrome, Flower, HeartDay, CalendarIcon } from './pieces.jsx'
 import {
-  AR_MONTHS,
   AR_DAYS_FULL,
   AR_DAYS_SHORT_MON_FIRST,
-  parseLocalDate,
-  format12h,
+  AR_MONTHS,
   countdownParts,
   countdownText,
+  format12h,
   googleCalendarUrl,
   icsContent,
+  parseLocalDate,
 } from '../lib/dates.js'
+import { CalendarIcon, CardChrome, Flower, HeartDay } from './pieces.jsx'
 
 function Countdown({ target, label }) {
   const [now, setNow] = useState(() => new Date())
@@ -115,14 +115,11 @@ export default function EventCard({ content }) {
           <h2 className="inv-card-title">{event.title}</h2>
 
           <div className="inv-event">
-            <h3 className="inv-event-sub">{event.subtitle}</h3>
 
             {start && (
               <>
-                <div className="inv-event-daytime">
-                  <span>{AR_DAYS_FULL[start.getDay()]}</span>
-                  <span className="ltr">{format12h(event.startTime)}</span>
-                </div>
+                
+                <h3 className="inv-event-sub">{event.subtitle}</h3>
 
                 <div className="inv-event-date">
                   <span className="inv-event-day">{start.getDate()}</span>
@@ -132,13 +129,12 @@ export default function EventCard({ content }) {
                     <span className="inv-event-year">{start.getFullYear()}</span>
                   </div>
                 </div>
-
-                <div className="inv-event-times">
-                  <div className="inv-event-time">
-                    <span className="inv-event-time-label">{event.timeLabel}</span>
-                    <span className="inv-event-time-value">{format12h(event.startTime)}</span>
-                  </div>
+              <div className="inv-event-daytime">
+                  <span>{AR_DAYS_FULL[start.getDay()]}</span>
+                  <span className="ltr">{format12h(event.startTime)}</span>
                 </div>
+                <h3 className="inv-event-sub">{event.saysorry}</h3>
+                
 
                 {event.showCountdown && <Countdown target={start} label={event.countdownLabel} />}
                 {event.showCalendar && <MonthCalendar date={start} />}

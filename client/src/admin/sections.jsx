@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api.js'
+import { BODY_FONTS, HEADING_FONTS } from '../lib/fonts.js'
 import { Card, Check, Color, Field, Select, getPath } from './fields.jsx'
 import UploadZone from './UploadZone.jsx'
-import { BODY_FONTS, HEADING_FONTS } from '../lib/fonts.js'
 
 const TIMEZONES = [
   'Europe/Berlin', 'Europe/London', 'Europe/Paris', 'Europe/Istanbul', 'Asia/Damascus', 'Asia/Beirut',

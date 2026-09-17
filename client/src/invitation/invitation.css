@@ -26,7 +26,7 @@
   --primary-10: rgba(81, 20, 25, 0.1);
   --font-serif: 'Libre Baskerville', Baskerville, 'Times New Roman', serif;
   --font-arabic: 'Amiri', 'Times New Roman', serif;
-  --font-display: 'Viaoda Libre', 'Aref Ruqaa', 'Amiri', serif;
+  --font-display: 'Gulzar', 'Viaoda Libre', 'Aref Ruqaa', 'Amiri', serif;
   --font-script: 'The Nautigal', cursive;
   --font-madi: 'Ms Madi', cursive;
   --font-caps: 'Cormorant Garamond', 'Times New Roman', serif;
@@ -213,7 +213,33 @@
   align-items: center;
   gap: 22px;
 }
+.inv-quote {
+  position: relative;
+  z-index: 10;
+  margin: 30px 0px;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  font-size: 30px;
+  font-family: var(--font-display);
+  color: var(--primary);
+}
 
+.inv-bismillah {
+  position: relative;
+  font-family: var(--font-display);
+  z-index: 10;
+  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  font-size: 20px;
+  line-height: 1.15;
+  color: var(--primary);
+}
 @container (min-width: 768px) {
   .inv-names {
     margin-top: 80px;
@@ -387,12 +413,12 @@
 }
 
 .inv-parent-title {
-  font-size: 12px;
-  color: var(--light-70);
+  font-size: 20px;
+  /* color: var(--light-70); */
 }
 
 .inv-parent-name {
-  font-size: 12px;
+  font-size: 22px;
   font-weight: 700;
   overflow-wrap: anywhere;
   color: var(--light);
@@ -412,7 +438,7 @@
   max-width: 560px;
   white-space: pre-line;
   text-align: center;
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.9;
   color: var(--light);
   font-family: var(--font-arabic);
@@ -423,6 +449,19 @@
     font-size: 13px;
   }
 }
+
+@container (max-width: 768px) {
+  .inv-announce {
+    font-size: 13px;
+  }
+  .inv-parent-title {
+    font-size: 10px;
+  }
+  .inv-parent-name {
+    font-size: 17px;
+  }
+}
+
 
 .inv-couple {
   position: relative;
@@ -449,6 +488,22 @@
   font-size: 31px;
   color: var(--light);
 }
+
+.inv-couple-title {
+  margin: 0;
+  width: 80%;
+  /* min-height: 30px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 10px;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--light);
+}
+
 
 @container (min-width: 768px) {
   .inv-couple-name {
@@ -506,14 +561,14 @@
 .inv-event-sub {
   margin: 0;
   font-weight: 400;
-  font-size: 20px;
+  font-size: 10px;
   text-transform: uppercase;
   color: var(--light);
 }
 
 @container (min-width: 768px) {
   .inv-event-sub {
-    font-size: 26px;
+    font-size: 15px;
   }
 }
 
@@ -525,7 +580,7 @@
   justify-content: space-between;
   font-size: 13px;
   text-transform: uppercase;
-  color: var(--light-70);
+  color: var(--light);
 }
 
 .inv-event-daytime .ltr {

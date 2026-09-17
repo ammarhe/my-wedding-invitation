@@ -1,5 +1,5 @@
-import { SafeImg, DirectionsIcon } from './pieces.jsx'
 import { directionsUrl, mapEmbedUrl } from '../lib/dates.js'
+import { DirectionsIcon, SafeImg } from './pieces.jsx'
 
 export default function Venue({ content }) {
   const { venue, theme } = content

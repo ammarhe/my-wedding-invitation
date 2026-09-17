@@ -30,14 +30,17 @@ export default function ParentsCard({ content }) {
           {announcement && <div className="inv-announce">{announcement}</div>}
 
           <div className="inv-couple">
-            <h3 className="inv-couple-name">{groom.fullName}</h3>
+            <h5 className="inv-couple-title">{groom.title}</h5>
+            <h3 className="inv-couple-name">{groom.shortName}</h3>
             <div className="inv-couple-sub">{groom.subtitle}</div>
             <div className="inv-couple-amp">&amp;</div>
-            <h3 className="inv-couple-name">{bride.fullName}</h3>
+            <h5 className="inv-couple-title">{bride.title}</h5>
+            <h3 className="inv-couple-name">{bride.shortName}</h3>
             <div className="inv-couple-sub">{bride.subtitle}</div>
           </div>
         </div>
       </div>
+          
     </section>
   )
 }
