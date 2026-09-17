@@ -1089,17 +1089,22 @@ textarea.inv-input {
 .inv-wishes {
   margin: 32px auto 0;
   width: 100%;
-  max-height: 500px;
-  overflow-y: auto;
   padding-inline-end: 8px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+/* Cap height + inner-scroll only on wider screens. On phones the nested
+   overflow box traps touch scrolling (it never chains to the page at its
+   edges, so it feels stuck) — let wishes flow into the normal page scroll. */
 @container (min-width: 768px) {
   .inv-wishes {
     max-width: 600px;
+    max-height: 500px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
