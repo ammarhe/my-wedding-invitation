@@ -71,6 +71,7 @@ export const defaultContent = {
     timeLabel: 'الاستقبال',
     countdownLabel: 'العد التنازلي',
     calendarLabel: 'أضف إلى التقويم',
+    saysorry: 'للاعتذار قبل 20.9',
     calendarTitle: 'زفاف المهندس عمار الحللي و المهندسة سنا العوا',
     calendarDetails: 'يسعدنا دعوتكم لحضور حفل زفاف المهندس عمار الحللي و المهندسة سنا العوا',
     showCalendar: true,
