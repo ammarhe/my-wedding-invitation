@@ -20,7 +20,17 @@ export function Overview({ draft }) {
   }, [])
 
   const base = `${window.location.origin}/`
-  const link = guest.trim() ? `${base}?to=${encodeURIComponent(guest.trim())}` : base
+  // Decode first so pasting an already-encoded name (e.g. "عائلة%20أبو") doesn't
+  // get double-encoded into %2520. decodeURIComponent throws on a stray "%", so guard it.
+  const cleanGuest = (() => {
+    const g = guest.trim()
+    try {
+      return decodeURIComponent(g)
+    } catch {
+      return g
+    }
+  })()
+  const link = cleanGuest ? `${base}?to=${encodeURIComponent(cleanGuest)}` : base
   const copy = async (text, key) => {
     try {
       await navigator.clipboard.writeText(text)

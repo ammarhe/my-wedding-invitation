@@ -35,22 +35,31 @@ export function startAutoScroll({ speed = 45, delay = 0, target = window } = {})
   }
   const events = ['wheel', 'touchstart', 'pointerdown', 'keydown', 'mousedown', 'scroll']
 
+  // Float accumulator: mobile browsers floor sub-pixel scrollTo, so at slow
+  // speeds (<1px/frame) re-reading the rounded scroll position each frame never
+  // advances. Track the target position as a float and round only when applying.
+  let pos = 0
+
   const step = (t) => {
     if (stopped) return
     if (!last) last = t
     const dt = Math.min(0.1, (t - last) / 1000) // clamp for tab switches
     last = t
-    const y = currentY()
-    const next = Math.min(maxY(), y + speed * dt)
+    // If the real position drifted from what we last set (user scroll, address
+    // bar resize), resync so takeover detection stays honest.
+    if (Math.abs(currentY() - lastKnownY) > 2) pos = currentY()
+    pos = Math.min(maxY(), pos + speed * dt)
+    const next = Math.round(pos)
     lastKnownY = next
     if (target === window) window.scrollTo(0, next)
     else target.scrollTop = next
-    if (next >= maxY() - 1) return stop()
+    if (pos >= maxY() - 1) return stop()
     raf = requestAnimationFrame(step)
   }
 
   timer = setTimeout(() => {
     if (stopped) return
+    pos = currentY()
     lastKnownY = currentY()
     events.forEach((ev) => window.addEventListener(ev, onUser, { capture: true, passive: true }))
     if (target !== window) events.forEach((ev) => target.addEventListener(ev, onUser, { capture: true, passive: true }))
